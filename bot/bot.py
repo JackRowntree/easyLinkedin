@@ -4,8 +4,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-import time
+from aws.param_store import SSMParameterStore
 from random import randint
+import time
+
 class Bot:
 	def __init__(self,account_url,clocktime):
 		options = webdriver.ChromeOptions()
@@ -16,8 +18,9 @@ class Bot:
 		self.clocktime=clocktime
 		self.account_url=account_url
 		self.account_activity_url = self.account_url +'/detail/recent-activity/shares/'
-		self.username=param_store.get_username(account_url)
-		self.password=param_store.get_password(account_url)
+		store = SSMParameterStore(prefix='/Prod')
+		self.username = store[account_url]['username']
+		self.password = store[account_url]['password']
 		self.random_sleep()
 		self.login()
 		self.navigate()
